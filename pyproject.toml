@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "markitdown-katex-plugin"
+version = "0.1.0"
+description = "A MarkItDown plugin that preserves KaTeX math when converting HTML to Markdown."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "beautifulsoup4",
+  "markitdown>=0.1.5",
+]
+
+[project.entry-points."markitdown.plugin"]
+katex_plugin = "markitdown_katex_plugin"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/markitdown_katex_plugin"]
