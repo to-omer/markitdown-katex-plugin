@@ -89,7 +89,11 @@ def test_plugin_preserves_mathjax_container_latex_attributes() -> None:
     html = r"""
     <html>
       <body>
-        <p>inline <mjx-container class="MathJax" jax="CHTML"><mjx-math data-latex="x_i"><mjx-mi>x</mjx-mi></mjx-math></mjx-container> value</p>
+        <p>
+          inline
+          <mjx-container class="MathJax" jax="CHTML"><mjx-math data-latex="x_i"><mjx-mi>x</mjx-mi></mjx-math></mjx-container>
+          value
+        </p>
         <mjx-container class="MathJax" jax="CHTML" display="true"><mjx-math data-latex="\int_0^1 x \, dx"><mjx-mi>x</mjx-mi></mjx-math></mjx-container>
       </body>
     </html>
@@ -100,7 +104,7 @@ def test_plugin_preserves_mathjax_container_latex_attributes() -> None:
         stream_info=StreamInfo(mimetype="text/html", extension=".html", charset="utf-8"),
     )
 
-    assert "inline $x_i$ value" in " ".join(result.markdown.split())
+    assert "inline $x_i$ value" in result.markdown
     assert "$$\n\\int_0^1 x \\, dx\n$$" in result.markdown
     assert "x\\_i" not in result.markdown
     assert "<mjx" not in result.markdown
@@ -128,7 +132,7 @@ def test_plugin_preserves_rendered_mathjax_v2_script_tags() -> None:
         stream_info=StreamInfo(mimetype="text/html", extension=".html", charset="utf-8"),
     )
 
-    assert "inline $x_i$ value" in " ".join(result.markdown.split())
+    assert "inline $x_i$ value" in result.markdown
     assert "$$\n\\int_0^1 x \\, dx\n$$" in result.markdown
     assert "rendered inline" not in result.markdown
     assert "rendered display" not in result.markdown

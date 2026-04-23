@@ -206,6 +206,7 @@ def _replace_mathjax_script_tags(soup: BeautifulSoup, replacements: dict[str, st
         if not tex:
             continue
 
+        element.decompose()
         _remove_mathjax_preview(rendered_node)
         _replace_node_with_math(
             rendered_node,
@@ -214,7 +215,6 @@ def _replace_mathjax_script_tags(soup: BeautifulSoup, replacements: dict[str, st
             is_display="mode=display" in script_type,
             kind="MATHJAXSCRIPT",
         )
-        element.decompose()
 
 
 def _find_rendered_mathjax_node(script: Tag) -> Tag | None:
@@ -279,7 +279,39 @@ def _replace_node_with_math(
     if is_display:
         element.replace_with(NavigableString("\n\n" + placeholder + "\n\n"))
     else:
+        _normalize_inline_math_spacing(element)
         element.replace_with(NavigableString(placeholder))
+
+
+def _normalize_inline_math_spacing(element: Tag) -> None:
+    _normalize_previous_inline_spacing(element)
+    _normalize_next_inline_spacing(element)
+
+
+def _normalize_previous_inline_spacing(element: Tag) -> None:
+    sibling = element.previous_sibling
+    while isinstance(sibling, NavigableString):
+        previous = sibling.previous_sibling
+        text = str(sibling)
+        if text.strip():
+            sibling.replace_with(NavigableString(re.sub(r"\s+$", " ", text)))
+            return
+
+        sibling.extract()
+        sibling = previous
+
+
+def _normalize_next_inline_spacing(element: Tag) -> None:
+    sibling = element.next_sibling
+    while isinstance(sibling, NavigableString):
+        next_sibling = sibling.next_sibling
+        text = str(sibling)
+        if text.strip():
+            sibling.replace_with(NavigableString(re.sub(r"^\s+", " ", text)))
+            return
+
+        sibling.extract()
+        sibling = next_sibling
 
 
 def _store_math_replacement(
